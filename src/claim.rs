@@ -48,6 +48,12 @@ impl Miner {
 
         let beneficiary_ata = utils::get_ore_ata(args.beneficiary);
         info!(ata = %beneficiary_ata, recipient = %args.beneficiary);
+        if let Ok(Some(_ata)) = client.get_token_account(&beneficiary_ata).await {
+            info!("Token account already exists: {:?}, continue to claim", beneficiary_ata);
+        } else {
+            error!("Token account does not exist: {:?}", beneficiary_ata);
+            return;
+        }
 
         let owner_proof_pdas = accounts
             .iter()
